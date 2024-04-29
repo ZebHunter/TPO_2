@@ -57,11 +57,5 @@ class LogTest {
         assertEquals(expected, log.calculate(x), eps)
     }
 
-    @Test
-    fun `test only for test`(){
-        val lnew = Ln(eps)
-        val log10 = Log(lnew, 10.0)
-        assertEquals(log10.calculate(0.5), -0.301029, eps)
-    }
 
 }

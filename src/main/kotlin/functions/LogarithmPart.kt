@@ -13,6 +13,6 @@ class LogarithmPart(private val log5: Log,
     override fun calculate(x: Double): Double {
        require(x != 0.0) {"Unresolved value for logarithm"}
        require(x != 1.0) {"Divide by zero"}
-       return ((((ln.calculate(x) / ln.calculate(x)) / log10.calculate(x)) - log5.calculate(x)) * log5.calculate(x.pow(2))).pow(3)
+       return ((((ln.calculate(x) / ln.calculate(x)) / log10.calculate(x)) - log5.calculate(x)) * log5.calculate(x).pow(2)).pow(3)
     }
 }

@@ -8,9 +8,65 @@ import com.zebhunter.logarithm.Log
 import com.zebhunter.trigonom.Cos
 import com.zebhunter.trigonom.Sec
 import com.zebhunter.trigonom.Sin
+import java.io.BufferedReader
+import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
+import org.jfree.chart.ChartFactory
+import org.jfree.chart.ChartPanel
+import org.jfree.chart.JFreeChart
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer
+import org.jfree.data.xy.XYSeries
+import org.jfree.data.xy.XYSeriesCollection
+import java.awt.Color
+import javax.swing.JFrame
 
+fun drawGraph(csvFilePath: String) {
+    val dataset = XYSeriesCollection()
+    val series = XYSeries("Series 1")
+
+    val reader = BufferedReader(FileReader(csvFilePath))
+
+    var isFirstLine = true
+    reader.useLines { lines ->
+        lines.forEach { line ->
+            if (isFirstLine) {
+                isFirstLine = false
+                return@forEach
+            }
+            val parts = line.split(",")
+            if (parts.size >= 2) {
+                val xValue = parts[0].trim().toDouble()
+                val yValue = parts[1].trim().toDouble()
+                series.add(xValue, yValue)
+            }
+        }
+    }
+
+    dataset.addSeries(series)
+
+    val chart: JFreeChart = ChartFactory.createXYLineChart(
+        "График из CSV",
+        "X",
+        "Y",
+        dataset
+    )
+
+    // Настройка видимости линий и форм
+    val renderer = XYLineAndShapeRenderer(true, true) // Линии и формы видимы
+    renderer.setSeriesPaint(0, Color.RED) // Цвет линии красный
+    renderer.setSeriesShape(0, java.awt.geom.Ellipse2D.Double(-3.0, -3.0, 6.0, 6.0)) // Круглые точки
+    renderer.setSeriesShapesVisible(0, true) // Точки видимы
+    renderer.setSeriesLinesVisible(0, true) // Линии видимы
+    chart.xyPlot.renderer = renderer
+
+    val frame = JFrame("График")
+    frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
+    frame.add(ChartPanel(chart))
+    frame.pack()
+    frame.setLocationRelativeTo(null)
+    frame.isVisible = true
+}
 fun writeToCsv(
     computeFunction: MathFunc,
     start: Double,
@@ -64,4 +120,6 @@ fun main() {
     writeToCsv(logFunc, 0.0001, 101.0, 0.1, "src/main/resources/logFunc.csv", "logFunc")
     writeToCsv(trigFunc, -8.0, 1.0, 0.1, "src/main/resources/trigFunc.csv", "trigFun")
     writeToCsv(system, -8.0, 101.0, 0.1, "src/main/resources/system.csv", "system")
+
+    drawGraph("src/main/resources/system.csv")
 }
